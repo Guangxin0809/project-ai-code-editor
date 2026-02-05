@@ -6,14 +6,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "inngest:dev": "pnpm dlx inngest-cli@latest dev"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.37.1",
     "@clerk/themes": "^2.4.51",
+    "@inngest/middleware-sentry": "^0.1.3",
+    "@mendable/firecrawl-js": "^4.12.0",
+    "@sentry/nextjs": "^10.38.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "convex": "^1.31.7",
+    "inngest": "^3.50.0",
     "lucide-react": "^0.563.0",
     "next": "16.1.6",
     "next-themes": "^0.4.6",
