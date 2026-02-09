@@ -9,6 +9,7 @@
  */
 
 import type * as projects from "../projects.js";
+import type * as utils_auth from "../utils/auth.js";
 
 import type {
   ApiFromModules,
@@ -18,6 +19,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   projects: typeof projects;
+  "utils/auth": typeof utils_auth;
 }>;
 
 /**
