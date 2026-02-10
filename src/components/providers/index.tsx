@@ -1,11 +1,7 @@
 "use client";
 
+import { ClerkProvider, useAuth } from "@clerk/nextjs";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
-import {
-  ClerkProvider,
-  useAuth,
-  UserButton
-} from "@clerk/nextjs";
 import {
   Authenticated,
   AuthLoading,
@@ -16,6 +12,7 @@ import {
 import { AuthLoadingView } from "@/features/auth/components/auth-loading-view";
 import { UnauthenticatedView } from "@/features/auth/components/unauthenticated-view";
 
+import { TooltipProvider } from "../ui/tooltip";
 import { ThemeProvider } from "./theme-provider";
 
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
@@ -31,8 +28,9 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
           disableTransitionOnChange
         >
           <Authenticated>
-            <UserButton />
-            {children}
+            <TooltipProvider>
+              {children}
+            </TooltipProvider>
           </Authenticated>
           <Unauthenticated>
             <UnauthenticatedView />

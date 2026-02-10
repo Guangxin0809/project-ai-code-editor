@@ -5,6 +5,10 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 
+export const useProject = (projectId: Id<"projects">) => {
+  return useQuery(api.projects.getById, { id: projectId });
+};
+
 export const useProjects = () => {
   return useQuery(api.projects.get);
 }
@@ -15,8 +19,8 @@ export const useProjectsPartial = (limit: number) => {
 
 export const useCreateProject = () => {
   return useMutation(api.projects.create).withOptimisticUpdate(
-    (localStorage, args) => {
-      const existingProjects = localStorage.getQuery(api.projects.get);
+    (localStore, args) => {
+      const existingProjects = localStore.getQuery(api.projects.get);
 
       if (existingProjects !== undefined) {
         const now = Date.now();
@@ -28,10 +32,47 @@ export const useCreateProject = () => {
           updatedAt: now,
         }
 
-        localStorage.setQuery(api.projects.get, {}, [
+        localStore.setQuery(api.projects.get, {}, [
           newProject,
           ...existingProjects,
         ]);
+      }
+    }
+  );
+}
+
+export const useRenameProject = () => {
+  return useMutation(api.projects.rename).withOptimisticUpdate(
+    (localStore, args) => {
+      const existingProject = localStorage.getQuery(
+        api.projects.getById,
+        { id: args.id },
+      );
+
+      if ((existingProject !== undefined) && (existingProject !== null)) {
+        localStore.setQuery(
+          api.projects.getById,
+          { id: args.id },
+          {
+            ...existingProject,
+            name: args.newName,
+            updatedAt: Date.now(),
+          },
+        );
+      }
+
+      const existingProjects = localStore.getQuery(api.projects.get);
+
+      if (existingProjects !== undefined) {
+        localStore.setQuery(
+          api.projects.get,
+          {},
+          existingProjects.map((project) => {
+            return project._id === args.id
+              ? { ...project, name: args.newName, updatedAt: Date.now() }
+              : project;
+          }),
+        );
       }
     }
   );
