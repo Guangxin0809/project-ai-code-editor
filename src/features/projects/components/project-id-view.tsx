@@ -5,6 +5,7 @@ import { Allotment } from "allotment";
 
 import { cn } from "@/lib/utils";
 
+import { FileExplorer } from "./file-explorer";
 import { Id } from "../../../../convex/_generated/dataModel";
 
 const MIN_SIDEBAR_WIDTH = 200;
@@ -37,6 +38,7 @@ export const ProjectIdView = ({ projectId }: { projectId: Id<"projects"> }) => {
       </nav>
 
       <div className="flex-1 relative">
+        {/* Editor view */}
         <div className={cn(
           "absolute inset-0",
           activeView === "editor" ? "visible" : "invisible"
@@ -51,7 +53,7 @@ export const ProjectIdView = ({ projectId }: { projectId: Id<"projects"> }) => {
               maxSize={MAX_SIDEBAR_WIDTH}
               preferredSize={DEFAULT_SIDEBAR_WIDTH}
             >
-              file explorer
+              <FileExplorer projectId={projectId} />
             </Allotment.Pane>
 
             <Allotment.Pane>
@@ -60,6 +62,7 @@ export const ProjectIdView = ({ projectId }: { projectId: Id<"projects"> }) => {
           </Allotment>
         </div>
 
+        {/* Preview view */}
         <div className={cn(
           "absolute inset-0",
           activeView === "preview" ? "visible" : "invisible"

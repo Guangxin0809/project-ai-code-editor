@@ -4,7 +4,7 @@ import { Id } from "../../../../convex/_generated/dataModel";
 
 type Props = {
   children: React.ReactNode;
-  params: Promise<{ projectId: string }>;
+  params: Promise<{ projectId: Id<"projects"> }>;
 }
 
 const ProjectLayout = async ({ children, params }: Props) => {
@@ -12,7 +12,7 @@ const ProjectLayout = async ({ children, params }: Props) => {
   const { projectId } = await params;
 
   return (
-    <ProjectIdLayout projectId={projectId as Id<"projects">}>
+    <ProjectIdLayout projectId={projectId}>
       {children}
     </ProjectIdLayout>
   )
