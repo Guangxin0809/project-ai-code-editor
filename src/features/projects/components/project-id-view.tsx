@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Allotment } from "allotment";
 
 import { cn } from "@/lib/utils";
+import { EditorView } from "@/features/editor/components/editor-view";
 
 import { FileExplorer } from "./file-explorer";
 import { Id } from "../../../../convex/_generated/dataModel";
@@ -57,7 +58,7 @@ export const ProjectIdView = ({ projectId }: { projectId: Id<"projects"> }) => {
             </Allotment.Pane>
 
             <Allotment.Pane>
-              editor view
+              <EditorView projectId={projectId} />
             </Allotment.Pane>
           </Allotment>
         </div>

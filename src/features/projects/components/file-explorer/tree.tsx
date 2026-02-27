@@ -3,6 +3,7 @@ import { ChevronRightIcon } from "lucide-react";
 import { FileIcon, FolderIcon } from "@react-symbols/icons/utils";
 
 import { cn } from "@/lib/utils";
+import { useEditor } from "@/features/editor/hooks/use-editor";
 
 import { LoadingRow } from "./loading-row";
 import { CreateInput } from "./create-input";
@@ -33,6 +34,8 @@ export const Tree = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [creating, setCreating] = useState<"file" | "folder" | null>(null);
+
+  const { activeTabId, openFile, closeTab } = useEditor(projectId);
 
   const createFolder = useCreateFolder();
   const createFile = useCreateFile();
@@ -85,8 +88,7 @@ export const Tree = ({
   // For file
   if (item.type === "file") {
     const fileName = item.name;
-    // const isActive = activeTabId === item._id;
-    const isActive = false;
+    const isActive = activeTabId === item._id;
 
     if (isRenaming) {
       return (
@@ -105,11 +107,11 @@ export const Tree = ({
         item={item}
         level={level}
         isActive={isActive}
-        // onClick={() => openFile(item._id, { pinned: false })}
-        // onDoubleClick={() => openFile(item._id, { pinned: true })}
+        onClick={() => openFile(item._id, { pinned: false })}
+        onDoubleClick={() => openFile(item._id, { pinned: true })}
         onRename={() => setIsRenaming(true)}
         onDelete={() => {
-          // TODO: closeTab(item._id);
+          closeTab(item._id);
           deleteFile({ id: item._id });
         }}
       >
@@ -212,10 +214,7 @@ export const Tree = ({
         onRename={() => setIsRenaming(true)}
         onCreateFile={() => startCreating("file")}
         onCreateFolder={() => startCreating("folder")}
-        onDelete={() => {
-          // TODO: close tab
-          deleteFile({ id: item._id })
-        }}
+        onDelete={() => deleteFile({ id: item._id })}
       >
         {folderRender}
       </TreeItemWrapper>

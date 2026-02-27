@@ -62,9 +62,7 @@ export const getFile = query({
  * Used for: Breadcrumbs navigation (src > components > button.tsx)
  */
 export const getFilePath = query({
-  args: {
-    id: v.id("files")
-  },
+  args: { id: v.id("files") },
   handler: async (ctx, args) => {
     const identity = await verifyAuth(ctx);
     const file = await ctx.db.get("files", args.id);
