@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   // if (!userId) {
   //   return NextResponse.json(
   //     { error: "Unauthorized" },
-  //     { status: 403 },
+  //     { status: 401 },
   //   );
   // }
 
@@ -56,12 +56,12 @@ export async function POST(request: Request) {
   // Cancel all processing messages
   const cancelledIds = await Promise.all(
     processingMessages.map(async (msg) => {
-      // await inngest.send({
-      //   name: "message/cancel",
-      //   data: {
-      //     messageId: msg._id,
-      //   },
-      // });
+      await inngest.send({
+        name: "message/cancel",
+        data: {
+          messageId: msg._id,
+        },
+      });
 
       await convex.mutation(
         api.system.updateMessageStatus,

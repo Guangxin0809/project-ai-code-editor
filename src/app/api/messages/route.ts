@@ -82,7 +82,7 @@ export async function POST(request: Request) {
     );
   }
 
-  // Create usermessage
+  // Create user message
   await convex.mutation(
     api.system.createMessage,
     {

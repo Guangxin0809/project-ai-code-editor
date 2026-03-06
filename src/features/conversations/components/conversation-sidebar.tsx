@@ -3,7 +3,12 @@
 import ky from "ky";
 import { toast } from "sonner";
 import { useState } from "react";
-import { CopyIcon, HistoryIcon, LoaderIcon, PlusIcon } from "lucide-react";
+import {
+  CopyIcon,
+  HistoryIcon,
+  LoaderIcon,
+  PlusIcon
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -60,7 +65,9 @@ export const ConversationSidebar = ({ projectId }: { projectId: Id<"projects"> }
   const conversationMessages = useMessages(activeConversationId);
 
   // Check if any message is currently processing
-  const isProcessing = conversationMessages?.some(message => message.status === "processing");
+  const isProcessing = conversationMessages?.some(
+    message => message.status === "processing"
+  );
 
   const handleCreateConversation = async () => {
     try {
@@ -78,7 +85,7 @@ export const ConversationSidebar = ({ projectId }: { projectId: Id<"projects"> }
   }
 
   const handleSubmit = async (message: PromptInputMessage) => {
-    // If processing and no new messahe, this is just a stop function
+    // If processing and no new message, this is just a stop function
     if (isProcessing && !message.text) {
       await handleCancel();
       setInput("");
@@ -109,10 +116,9 @@ export const ConversationSidebar = ({ projectId }: { projectId: Id<"projects"> }
 
   const handleCancel = async () => {
     try {
-      await ky.post(
-        "/api/messages/cancel",
-        { json: { projectId } },
-      );
+      await ky.post("/api/messages/cancel", {
+        json: { projectId }
+      });
     } catch {
       toast.error("Unable to cancel request");
     }
