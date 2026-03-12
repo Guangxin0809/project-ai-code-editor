@@ -17,6 +17,7 @@ export default defineSchema({
       v.union(
         v.literal("exporting"),
         v.literal("completed"),
+        v.literal("cancelled"),
         v.literal("failed"),
       ),
     ),

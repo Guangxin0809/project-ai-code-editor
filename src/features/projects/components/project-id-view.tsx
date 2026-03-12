@@ -6,9 +6,10 @@ import { Allotment } from "allotment";
 import { cn } from "@/lib/utils";
 import { EditorView } from "@/features/editor/components/editor-view";
 
-import { FileExplorer } from "./file-explorer";
-import { Id } from "../../../../convex/_generated/dataModel";
 import { PreviewView } from "./preview-view";
+import { FileExplorer } from "./file-explorer";
+import { ExportPopover } from "./export-popover";
+import { Id } from "../../../../convex/_generated/dataModel";
 
 const MIN_SIDEBAR_WIDTH = 200;
 const MAX_SIDEBAR_WIDTH = 800;
@@ -35,7 +36,7 @@ export const ProjectIdView = ({ projectId }: { projectId: Id<"projects"> }) => {
         />
 
         <div className="flex-1 flex justify-end h-full">
-          export popover
+          <ExportPopover projectId={projectId} />
         </div>
       </nav>
 

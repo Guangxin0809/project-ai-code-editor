@@ -1,6 +1,6 @@
 import z from "zod";
 import { NextResponse } from "next/server";
-// import { auth } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 
 import { inngest } from "@/inngest/client";
 import { convex } from "@/lib/convex-client";
@@ -15,18 +15,16 @@ const requestSchema = z.object({
 
 export async function POST(request: Request) {
 
-  // const { userId } = await auth();
+  const { userId } = await auth();
 
-  // if (!userId) {
-  //   return NextResponse.json(
-  //     { error: "Unauthorized "},
-  //     { status: 403 },
-  //   );
-  // }
+  if (!userId) {
+    return NextResponse.json(
+      { error: "Unauthorized "},
+      { status: 403 },
+    );
+  }
 
-  // TODO: change it back
-  // const internalKey = process.env.POLARIS_CONVEX_INTERNAL_KEY;
-  const internalKey = "guangxin-ai-code-editor-19980809";
+  const internalKey = process.env.POLARIS_CONVEX_INTERNAL_KEY;
 
   if (!internalKey) {
     return NextResponse.json(

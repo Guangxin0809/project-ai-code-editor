@@ -5,19 +5,14 @@ import { useEffect, useState } from "react";
 import { FaGithub } from "react-icons/fa";
 import { SparkleIcon } from "lucide-react";
 import { Poppins } from "next/font/google";
-import {
-  adjectives,
-  animals,
-  colors,
-  uniqueNamesGenerator
-} from "unique-names-generator";
 
 import { cn } from "@/lib/utils";
 import { Kbd } from "@/components/ui/kbd";
 import { Button } from "@/components/ui/button";
 
 import { ProjectsList } from "./projects-list";
-import { useCreateProject } from "../hooks/use-projects";
+import { NewProjectDialog } from "./new-project-dialog";
+import { ImportGithubDialog } from "./import-github-dialog";
 import { ProjectsCommandDialog } from "./projects-command-dialog";
 
 const fontPoppins = Poppins({
@@ -27,8 +22,9 @@ const fontPoppins = Poppins({
 
 export const ProjectsView = () => {
 
-  const createProject = useCreateProject();
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [commandDialogOpen, setCommandDialogOpen] = useState(false);
+  const [newProjectDialogOpen, setNewProjectDialogOpen] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -47,21 +43,19 @@ export const ProjectsView = () => {
     }
   }, []);
 
-  const handleCreateProject = () => {
-    const projectName = uniqueNamesGenerator({
-      dictionaries: [adjectives, colors, animals],
-      separator: "-",
-      length: 3,
-    });
-
-    createProject({ name: projectName });
-  }
-
   return (
     <>
       <ProjectsCommandDialog
         open={commandDialogOpen}
         onOpenChange={setCommandDialogOpen}
+      />
+      <ImportGithubDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+      />
+      <NewProjectDialog
+        open={newProjectDialogOpen}
+        onOpenChange={setNewProjectDialogOpen}
       />
 
       <div className="flex flex-col justify-center items-center min-h-screen p-6 md:p-16 bg-sidebar">
@@ -88,7 +82,7 @@ export const ProjectsView = () => {
             <div className="grid grid-cols-2 gap-4">
               <Button
                 variant="outline"
-                onClick={handleCreateProject}
+                onClick={() => setNewProjectDialogOpen(true)}
                 className="flex flex-col justify-start items-start gap-y-6 h-full p-4 border rounded-none bg-background"
               >
                 <div className="flex justify-between items-center w-full">
@@ -108,7 +102,7 @@ export const ProjectsView = () => {
 
               <Button
                 variant="outline"
-                onClick={() => {}}
+                onClick={() => setImportDialogOpen(true)}
                 className="flex flex-col justify-start items-start gap-y-6 h-full p-4 border rounded-none bg-background"
               >
                 <div className="flex justify-between items-center w-full">

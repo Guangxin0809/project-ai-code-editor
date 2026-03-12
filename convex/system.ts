@@ -94,6 +94,36 @@ export const getFileById = query({
   },
 });
 
+export const getProjectFilesWithUrls = query({
+  args: {
+    internalKey: v.string(),
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, args) => {
+
+    validateInternalKey(args.internalKey);
+
+    const files = await ctx.db
+      .query("files")
+      .withIndex("by_project", q => q.eq("projectId", args.projectId))
+      .collect();
+
+    const results = await Promise.all(
+      files.map(async (file) => {
+        if (file.storageId) {
+          const url = await ctx.storage.getUrl(file.storageId);
+          return { ...file, storageUrl: url }
+        }
+
+        return { ...file, storageUrl: null }
+      })
+    );
+
+    return results;
+
+  },
+});
+
 
 export const createMessage = mutation({
   args: {
@@ -479,6 +509,157 @@ export const cleanup = mutation({
     }
 
     return { deleted: files.length };
+
+  },
+});
+
+export const generateUploadUrl = mutation({
+  args: {
+    internalKey: v.string(),
+  },
+  handler: async (ctx, args) => {
+    validateInternalKey(args.internalKey);
+    return await ctx.storage.generateUploadUrl();
+  },
+});
+
+// Binary file: images, etc...
+export const createBinaryFile = mutation({
+  args: {
+    internalKey: v.string(),
+    projectId: v.id("projects"),
+    storageId: v.id("_storage"),
+    name: v.string(),
+    parentId: v.optional(v.id("files")),
+  },
+  handler: async (ctx, args) => {
+
+    validateInternalKey(args.internalKey);
+
+    const files = await ctx.db
+      .query("files")
+      .withIndex("by_project_parent", q => 
+        q
+          .eq("projectId", args.projectId)
+          .eq("parentId", args.parentId)
+      )
+      .collect();
+
+    const existing = files.find(
+      file => (file.name === args.name) && (file.type === "file")
+    );
+
+    if (existing) {
+      throw new Error("File already exists");
+    }
+
+    const fileId = await ctx.db.insert("files", {
+      projectId: args.projectId,
+      name: args.name,
+      type: "file",
+      storageId: args.storageId,
+      parentId: args.parentId,
+      updatedAt: Date.now(),
+    });
+
+    return fileId;
+
+  },
+});
+
+export const updateImportStatus = mutation({
+  args: {
+    internalKey: v.string(),
+    projectId: v.id("projects"),
+    status: v.optional(
+      v.union(
+        v.literal("importing"),
+        v.literal("completed"),
+        v.literal("failed"),
+      )
+    ),
+  },
+  handler: async (ctx, args) => {
+    validateInternalKey(args.internalKey);
+
+    await ctx.db.patch("projects", args.projectId, {
+      importStatus: args.status,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+export const updateExportStatus = mutation({
+  args: {
+    internalKey: v.string(),
+    projectId: v.id("projects"),
+    repoUrl: v.optional(v.string()),
+    status: v.optional(
+      v.union(
+        v.literal("exporting"),
+        v.literal("completed"),
+        v.literal("cancelled"),
+        v.literal("failed"),
+      )
+    ),
+  },
+  handler: async (ctx, args) => {
+    validateInternalKey(args.internalKey);
+
+    await ctx.db.patch("projects", args.projectId, {
+      exportStatus: args.status,
+      exportRepoUrl: args.repoUrl,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+export const createProject = mutation({
+  args: {
+    internalKey: v.string(),
+    name: v.string(),
+    ownerId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    validateInternalKey(args.internalKey);
+
+    const projectId = await ctx.db.insert("projects", {
+      name: args.name,
+      ownerId: args.ownerId,
+      importStatus: "importing",
+      updatedAt: Date.now(),
+    });
+
+    return projectId;
+  },
+});
+
+export const createProjectWithConversation = mutation({
+  args: {
+    internalKey: v.string(),
+    projectName: v.string(),
+    conversationTitle: v.string(),
+    ownerId: v.string(),
+  },
+  handler: async (ctx, args) => {
+
+    validateInternalKey(args.internalKey);
+
+    const now = Date.now();
+
+    const projectId = await ctx.db.insert("projects", {
+      name: args.projectName,
+      ownerId: args.ownerId,
+      updatedAt: now,
+    });
+
+    const conversationId = await ctx.db.insert("conversations", {
+      projectId,
+      title: args.conversationTitle,
+      updatedAt: now,
+    });
+
+    return { projectId, conversationId }
 
   },
 });
